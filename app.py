@@ -20,29 +20,55 @@ def create_app():
     @app.route('/', methods=('GET', 'POST'))
     @app.route('/index', methods=('GET', 'POST'))
     def index():
+        # gain access to the global user so we can set it
         global user
+        # if a submission hasn't been made (method is not post)
         if request.method != "POST":
-            return render_template('index.html')
-        elif request.method == "POST":
-            user = db.get_user(request.form['username'])
+            # if user is not logged in
             if user is None:
+                # render the login page
+                return render_template('index.html')
+            # if a manager is attempting to access login
+            if user.user_type == 'Manager':
+                # redirect to admin page
+                return redirect('/admin')
+            # if a budgeter is attempting to access login
+            elif user.user_type == 'Budget':
+                # redirect to form submission page
+                return redirect('/form')
+            else:
+                # render the login page
+                return render_template('index.html')
+        # if a submission has been made (method is post)
+        elif request.method == "POST":
+            # set the user
+            user = db.get_user(request.form['username'])
+            # if the user is None (i.e. entered username is not found
+            if user is None:
+                # render corresponding error message
                 return render_template('incorrect.html', data=request.form['username'])
             elif user.user_type == 'Manager':
+                # if a manager has logged in, redirect to admin page
                 return redirect('/admin')
             elif user.user_type == 'Budget':
+                # if a budgeter has logged in, redirect to budget submission page
                 return redirect('/form')
 
     @app.route('/logout')
     def logout():
+        # set user to none
         global user
         user = None
+        # redirect to login page
         return redirect('/index')
 
     @app.route('/form', methods=['POST', 'GET'])
     def form():
         global user
+        # if user is not logged in, redirect to login page
         if user is None:
             return redirect('/index')
+        # if user is a manager, redirect to admin page
         elif user.user_type == 'Manager':
             return redirect('/admin')
         # if not post
@@ -50,7 +76,6 @@ def create_app():
         if request.method != "POST":
             organization = objects.Organization(owner=user, name="Organization name")
             request_form = objects.Form(organization=organization, submitter=organization.owner)
-            print(request_form.amount_out)
             return render_template('submitter/submit.html', user=user, form=request_form)
 
         # if post & UPDATE not SUBMIT
@@ -61,7 +86,6 @@ def create_app():
                                                 amount_out=float(request.form['amount_out']))
 
             request_form = objects.Form(organization=organization, submitter=user)
-            print(request_form.amount_in)
             return render_template('submitter/submit.html', user=user, form=request_form)
 
         # if post & SUBMIT not UPDATE
@@ -77,8 +101,13 @@ def create_app():
     @app.route('/myapps')
     def myapps():
         global user
+        # if user is not logged in, redirect to login page
         if user is None:
             return redirect('/index')
+        # else if user is manager, redirect to admin page
+        elif user.user_type == 'Manager':
+            return redirect('/admin')
+        # else display all forms
         else:
             forms = db.get_forms_by_creator(user.name)
             return render_template('submitter/apps.html', forms=forms)
@@ -86,36 +115,52 @@ def create_app():
     @app.route('/admin')
     def admin():
         global user
+        # if user is not logged in, redirect to login page
         if user is None:
             return redirect('/index')
+        # if user is not a manager, redirect to form submission page
         elif user.user_type != 'Manager':
             return redirect('/form')
+        # get all forms, organized by category
         accepted = db.get_forms_by_status("Accepted")
         denied = db.get_forms_by_status("Denied")
         progress = db.get_forms_by_status("In Progress")
+        # display all forms on page
         return render_template('admin/admin.html', accepted_forms=accepted, denied_forms=denied,
                                in_progress_forms=progress)
 
     @app.route('/forms', methods=['POST', 'GET'])
     def requests():
         global user
+        # if user is not logged in, redirect to login page
         if user is None:
             return redirect('/index')
+        # if user is not a manager, redirect to form submission page
         elif user.user_type != 'Manager':
             return redirect('/form')
+        # if method is post (i.e. submit button was pressed)
         if request.method == "POST":
+            # save the form as an object
             request_form = db.get_form(request.form['form_id'])
+            # set the comments and status from admin entries
             request_form.comments = request.form['comments']
             request_form.status = request.form['status']
+            # update the form
             request_form.update_db()
+            # display success
             return render_template('admin/success.html')
         else:
+            # find out which ID this form is
             form_id_to_get = request.args.get("id")
+            # get the form from the ID
             budget_form = db.get_form(form_id_to_get)
+            # if the form doesn't exist, display error
             if budget_form is None:
                 return render_template('admin/error.html')
+            # else if the form has status 'In Progress' display screen with editable content
             elif budget_form.status == 'In Progress':
                 return render_template('admin/in_progress.html', form=budget_form)
+            # else just display form with all info
             else:
                 return render_template('admin/forms.html', form=budget_form)
 
