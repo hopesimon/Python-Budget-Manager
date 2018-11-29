@@ -1,3 +1,5 @@
+import db
+
 class Organization:
     def __init__(self, name=None, owner=None, amount_in=0, amount_out=0):
         self.__name = name
@@ -110,6 +112,12 @@ class Form:
 
     def get_net(self):
         return self.__amount_in - self.__amount_out
+
+    def add_to_db(self):
+        db.add_form(self)
+
+    def update_db(self):
+        db.update_form(self)
 
 
 class User:

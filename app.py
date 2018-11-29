@@ -71,7 +71,7 @@ def create_app():
                                                 amount_in=float(request.form['amount_in']),
                                                 amount_out=float(request.form['amount_out']))
             request_form = objects.Form(organization=organization, submitter=user)
-            db.add_form(request_form)
+            request_form.add_to_db()
             return render_template('submitter/submit_success.html')
 
     @app.route('/myapps')
@@ -107,7 +107,7 @@ def create_app():
             request_form = db.get_form(request.form['form_id'])
             request_form.comments = request.form['comments']
             request_form.status = request.form['status']
-            db.update_form(request_form)
+            request_form.update_db()
             return render_template('admin/success.html')
         else:
             form_id_to_get = request.args.get("id")
