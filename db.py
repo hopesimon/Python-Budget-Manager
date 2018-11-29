@@ -90,15 +90,15 @@ def get_all_forms():
         return forms
 
 
-def update_form(form_id, status='In Progress', comments=None):
+def update_form(form):
     query = '''UPDATE `Forms` SET `status`=?, `comments`=? WHERE id=?;'''
     with closing(conn.cursor()) as c:
-        c.execute(query, (status, comments, form_id))
+        c.execute(query, (form.status, form.comments, form.id))
         conn.commit()
 
 
-def add_form(name=None, amount_in=0, amount_out=0, comments=None, user=None):
+def add_form(form):
     query = '''INSERT INTO `Forms`(`name`,`amount_in`,`amount_out`,`comments`,`user`) VALUES (?,?,?,?,?);'''
     with closing(conn.cursor()) as c:
-        c.execute(query, (name, amount_in, amount_out, comments, user))
+        c.execute(query, (form.organization.name, form.amount_in, form.amount_out, form.comments, form.submitter.name))
         conn.commit()

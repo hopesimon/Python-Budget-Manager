@@ -41,7 +41,7 @@
                     <div class="row" style="padding:10px;">
                         <div class="col-lg-12">
                             <div class="form-group">
-                                 <h2>Organization: &nbsp;&nbsp;<input type="text" id="Organization" name="orgname" maxlength="30" placeholder="Enter organization name"></h2>
+                                 <h2>Organization: &nbsp;&nbsp;<input type="text" id="Organization" name="orgname" maxlength="30" value="{{form.organization.name}}"></h2>
                             </div>
                         </div>
                     </div>
@@ -51,8 +51,11 @@
                         <h2>Amount In:</h2>
                     </div>
                     <div class="row">
-                        <div class="col-lg-12">
-                            <h5>Amount: &nbsp;&nbsp;<input type="number" id="amount_in" name="amount_in" placeholder="0.00" min="0" step="0.01" ></h5>
+                        <div class="col-lg-6">
+                            <h5>Amount: &nbsp;&nbsp;<input type="number" id="amount_in" name="amount_in" value="{{form.amount_in}}" min="0" step="0.01" ></h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <button class="btn btn-blue btn-block" value="update" name="btn">Update Net Revenue/(Expense)</button>
                         </div>
                     </div>
                     <hr>
@@ -60,13 +63,25 @@
                         <h2>Amount Out:</h2>
                     </div>
                     <div class="row">
+                        <div class="col-lg-6">
+                            <h5>Amount: &nbsp;&nbsp;<input type="number" id="amount_out" name="amount_out" value="{{form.amount_out}}" min="0" step="0.01" ></h5>
+                        </div>
+                        <div class="col-lg-6">
+                            <button class="btn btn-blue btn-block" value="update" name="btn">Update Net Revenue/(Expense)</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row" style="padding-top:10px;">
+                        <h2>Net Revenue/(Expense):</h2>
+                    </div>
+                    <div class="row">
                         <div class="col-lg-12">
-                            <h5>Amount: &nbsp;&nbsp;<input type="number" id="amount_out" name="amount_out" placeholder="0.00" min="0" step="0.01" ></h5>
+                            <h5>Amount: {{form.get_net()}}</h5>
                         </div>
                     </div>
                     <hr>
                     <div class="row" style="padding:20px;">
-                        <button class="btn btn-red btn-block" name="submit">Submit</button>
+                        <button class="btn btn-red btn-block" name="btn" value="submit">Submit</button>
                     </div>
                 </form>
             </div>

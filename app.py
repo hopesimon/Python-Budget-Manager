@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect
 from flask_bootstrap import Bootstrap
 import os
 import db
+import objects
 
 port = int(os.getenv('PORT', 8000))
 
@@ -44,13 +45,33 @@ def create_app():
             return redirect('/index')
         elif user.user_type == 'Manager':
             return redirect('/admin')
+        # if not post
+        # set organizations to be essentially empty
         if request.method != "POST":
-            return render_template('submitter/submit.html', user=user)
-        elif request.method == "POST":
-            name = request.form['orgname']
-            amount_in = request.form['amount_in']
-            amount_out = request.form['amount_out']
-            db.add_form(name=name, amount_in=amount_in, amount_out=amount_out, user=user.name)
+            organization = objects.Organization(owner=user, name="Organization name")
+            request_form = objects.Form(organization=organization, submitter=organization.owner)
+            print(request_form.amount_out)
+            return render_template('submitter/submit.html', user=user, form=request_form)
+
+        # if post & UPDATE not SUBMIT
+        # update the net amount
+        elif request.method == "POST" and request.form['btn'] == 'update':
+            organization = objects.Organization(name=request.form['orgname'], owner=user,
+                                                amount_in=float(request.form['amount_in']),
+                                                amount_out=float(request.form['amount_out']))
+
+            request_form = objects.Form(organization=organization, submitter=user)
+            print(request_form.amount_in)
+            return render_template('submitter/submit.html', user=user, form=request_form)
+
+        # if post & SUBMIT not UPDATE
+        # submit the app
+        elif request.method == "POST" and request.form['btn'] == 'submit':
+            organization = objects.Organization(name=request.form['orgname'], owner=user,
+                                                amount_in=float(request.form['amount_in']),
+                                                amount_out=float(request.form['amount_out']))
+            request_form = objects.Form(organization=organization, submitter=user)
+            db.add_form(request_form)
             return render_template('submitter/submit_success.html')
 
     @app.route('/myapps')
@@ -83,10 +104,10 @@ def create_app():
         elif user.user_type != 'Manager':
             return redirect('/form')
         if request.method == "POST":
-            form_id = request.form['form_id']
-            comments = request.form['comments']
-            status = request.form['status']
-            db.update_form(form_id=form_id, status=status, comments=comments)
+            request_form = db.get_form(request.form['form_id'])
+            request_form.comments = request.form['comments']
+            request_form.status = request.form['status']
+            db.update_form(request_form)
             return render_template('admin/success.html')
         else:
             form_id_to_get = request.args.get("id")
