@@ -1,5 +1,6 @@
 import db
 
+
 class Organization:
     def __init__(self, name=None, owner=None, amount_in=0, amount_out=0):
         self.__name = name

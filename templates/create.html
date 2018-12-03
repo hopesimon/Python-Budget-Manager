@@ -32,18 +32,16 @@
     <div class="container">
         <div class="row" style="padding-top:30%;">
             <div class="col-lg-12">
-                <form method="post" action="/index">
+                <form method="post" action="/create">
                     <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="username" class="form-control" id="username" name="username" aria-describedby="userHelp" placeholder="Enter username">
-                        <small id="userHelp" class="form-text text-muted">The pre-defined usernames are either 'Admin' or 'Tester'</small>
+                        <label for="name">Username</label>
+                        <input type="username" class="form-control" id="name" name="name" aria-describedby="userHelp" placeholder="Enter username">
+                        <input type="radio" id="admin_type" name="type" value="Manager">
+                        <label for="admin_type">Admin (Manager)</label>
+                        <input type="radio" id="budget_type" name="type" value="Budget">
+                        <label for="budget_type">Budgeter</label>
                     </div>
-                    <div class="col-lg-5">
-                        <a href="/create" class="btn btn-info" role="button">Create Account</a>
-                    </div>
-                    <div class="col-lg-5">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>

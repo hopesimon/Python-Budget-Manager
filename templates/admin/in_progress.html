@@ -72,7 +72,7 @@
                             </div>
                             <!-- /.panel-heading -->
                             <div class="panel-body">
-                                <p>${{form.amount_in}}</p>
+                                <p>${{'%0.2f' % form.amount_in|float}}</p>
                             </div>
                             <!-- /.panel-body -->
                         </div>
@@ -83,7 +83,7 @@
                             </div>
                             <!-- /.panel-heading -->
                             <div class="panel-body">
-                                <p>${{form.amount_out}}</p>
+                                <p>${{'%0.2f' % form.amount_out|float}}</p>
                             </div>
                             <!-- /.panel-body -->
                         </div>
