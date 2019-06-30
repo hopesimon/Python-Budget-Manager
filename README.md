@@ -29,7 +29,6 @@ applications:
   domain: <your domain>
   host: <your host name>
 ```
-* Delete the `.idea` directory and the `.ibm-project` file.
 * Download [the CLI](https://console.bluemix.net/docs/cli/index.html#overview).
 * Change the directory to the location where the git repository was downloaded.
 * Run:
